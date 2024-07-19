@@ -51,7 +51,7 @@ impl<T: fmt::Display, Lvl: LogLevelModifier> Failure for ScreenLog<T, Lvl> {
     const LEVEL: Level = Lvl::LEVEL;
 
     fn handle_error(self, _: (), callsite: Option<&'static impl Callsite>) {
-        use bevy_debug_text_overlay::{InvocationSiteKey, COMMAND_CHANNELS};
+        use bevy_debug_text_overlay::{InvocationSiteKey, command_channels};
         let metadata = callsite.unwrap().metadata();
         let key = InvocationSiteKey {
             file: metadata.file().unwrap(),
@@ -59,13 +59,13 @@ impl<T: fmt::Display, Lvl: LogLevelModifier> Failure for ScreenLog<T, Lvl> {
             column: 0,
         };
         let color = match *metadata.level() {
-            Level::ERROR => Color::RED,
-            Level::WARN => Color::ORANGE,
-            Level::DEBUG => Color::BLUE,
-            Level::TRACE => Color::PURPLE,
-            _ => Color::GREEN,
+            Level::ERROR => Color::from(bevy::color::palettes::css::RED),
+            Level::WARN => Color::from(bevy::color::palettes::css::ORANGE),
+            Level::DEBUG => Color::from(bevy::color::palettes::css::BLUE),
+            Level::TRACE => Color::from(bevy::color::palettes::css::PURPLE),
+            _ => Color::from(bevy::color::palettes::css::GREEN),
         };
-        COMMAND_CHANNELS.refresh_text(key, || format!("{}", self.0), 1., Some(color));
+        command_channels().refresh_text(key, || format!("{}", self.0), 1., Some(color));
     }
 }
 
